@@ -65,10 +65,13 @@ Example:
 Simple example how to use downward API to get `POD_NAME` can be found [here](https://raw.githubusercontent.com/kubernetes/kubernetes.github.io/master/docs/user-guide/downward-api/dapi-pod.yaml).
 
 ### Job
-Checks if a given job succeded at least once.
+Checks if a given job or set of jobs with matching labels succeded at least once.
+As seen below the syntax uses JSON to allow for label support, which is a breaking
+when migrating from versions prior to and including v0.3.0.
+
 Example:
 
-`DEPENDENCY_JOBS=nova-init,neutron-init`
+`DEPENDENCY_JOBS='[{"namespace": "foo", "name": "nova-init"}, {"labels": {"initializes": "neutron"}}]'`
 
 ### Config
 This dependency performs a container level templating of configuration files. It can template an ip address `{{ .IP }}` and hostname `{{ .HOSTNAME }}`.
@@ -91,13 +94,12 @@ Example:
 Checks if at least one pod matching the specified labels is already running, by
 default anywhere in the cluster, or use `"requireSameNode": true` to require a
 a pod on the same node.
-In contrast to other dependencies, the syntax uses json in order to avoid inventing a new
-format to specify labels and the parsing complexities that would come with that.
+As seen below the syntax uses JSON to allow for label support.
 This dependency requires a `POD_NAME` env which can be easily passed through the
 [downward api](http://kubernetes.io/docs/user-guide/downward-api/). The `POD_NAME` variable is mandatory and is used to resolve dependencies.
 Example:
 
-`DEPENDENCY_POD="[{\"namespace\": \"foo\", \"labels\": {\"k1\": \"v1\", \"k2\": \"v2\"}}, {\"labels\": {\"k1\": \"v1\", \"k2\": \"v2\"}, \"requireSameNode\": true}]"`
+`DEPENDENCY_POD='[{"namespace": "foo", "labels": {"k1": "v1", "k2": "v2"}}, {"labels": {"k1": "v1", "k2": "v2"}, "requireSameNode": true}]'`
 
 ## Image
 
